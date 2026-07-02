@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>自由なお世話モード</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+      background: linear-gradient(180deg, #fff8fd 0%, #eef7ff 100%);
+      color: #444;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      transition: background 0.4s ease;
+    }
+
+    body.low-status-mode {
+      background: linear-gradient(180deg, #dce8ff 0%, #cfd9ff 46%, #bfc7f0 100%);
+    }
+
+    .app {
+      width: 100%;
+      max-width: 430px;
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 28px;
+      padding: 22px;
+      box-shadow: 0 12px 30px rgba(120, 160, 200, 0.18);
+      margin-top: 18px;
+      transition: filter 0.35s ease;
+    }
+
+    body.low-status-mode .card {
+      filter: brightness(0.86) saturate(0.86);
+    }
+
+    h1 {
+      font-size: 24px;
+      margin: 14px 0 8px;
+      color: #4c7fcf;
+    }
+
+    h2 {
+      font-size: 19px;
+      color: #4c7fcf;
+      margin: 10px 0;
+    }
+
+    p {
+      font-size: 15px;
+      line-height: 1.8;
+      margin: 10px 0;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 13px 18px;
+      margin: 8px 4px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, #79c7ff, #9d8cff);
+      color: white;
+      box-shadow: 0 6px 14px rgba(90, 130, 200, 0.22);
+    }
+
+    button.secondary {
+      background: #fff;
+      color: #5b78aa;
+      border: 2px solid #cfe3ff;
+      box-shadow: none;
+    }
+
+    button.danger {
+      background: #fff;
+      color: #d15a5a;
+      border: 2px solid #ffd2d2;
+      box-shadow: none;
+    }
+
+    input {
+      width: 90%;
+      padding: 13px 14px;
+      border-radius: 16px;
+      border: 2px solid #cfe3ff;
+      font-size: 16px;
+      box-sizing: border-box;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .gift {
+      width: 140px;
+      height: 130px;
+      margin: 22px auto;
+      position: relative;
+      cursor: pointer;
+      animation: float 2.3s ease-in-out infinite;
+    }
+
+    .gift-box {
+      width: 120px;
+      height: 90px;
+      background: linear-gradient(135deg, #ffb6df, #b7dcff);
+      border-radius: 22px;
+      position: absolute;
+      bottom: 0;
+      left: 10px;
+      box-shadow: 0 12px 22px rgba(120, 140, 180, 0.22);
+    }
+
+    .gift-lid {
+      width: 132px;
+      height: 34px;
+      background: linear-gradient(135deg, #ff8fd0, #80cfff);
+      border-radius: 18px;
+      position: absolute;
+      top: 18px;
+      left: 4px;
+    }
+
+    .gift-ribbon-v {
+      width: 22px;
+      height: 112px;
+      background: rgba(255, 255, 255, 0.75);
+      border-radius: 12px;
+      position: absolute;
+      left: 59px;
+      top: 18px;
+    }
+
+    .gift-ribbon-h {
+      width: 132px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.75);
+      border-radius: 12px;
+      position: absolute;
+      left: 4px;
+      top: 56px;
+    }
+
+    .macaron {
+      width: 155px;
+      height: 105px;
+      margin: 28px auto;
+      position: relative;
+      cursor: pointer;
+      animation: pop 0.8s ease, float 2.5s ease-in-out infinite;
+    }
+
+    .macaron-top,
+    .macaron-bottom {
+      width: 155px;
+      height: 50px;
+      background: linear-gradient(135deg, #9fdcff, #d6b8ff);
+      border-radius: 80px 80px 34px 34px;
+      box-shadow: inset 0 8px 10px rgba(255,255,255,0.55);
+    }
+
+    .macaron-cream {
+      width: 145px;
+      height: 24px;
+      background: #fff6dc;
+      border-radius: 999px;
+      margin: -5px auto;
+      box-shadow: 0 2px 8px rgba(180, 150, 100, 0.12);
+    }
+
+    .macaron-bottom {
+      border-radius: 34px 34px 80px 80px;
+      transform: translateY(-2px);
+    }
+
+    .pet-area {
+      position: relative;
+      min-height: 220px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .pet-img {
+      width: 185px;
+      max-width: 72%;
+      image-rendering: auto;
+      cursor: pointer;
+      user-select: none;
+      transform-origin: center bottom;
+    }
+
+    .motion-kangaroo_blue { animation: kangarooJump 1.15s ease-in-out infinite; }
+    .motion-rabbit_pink { animation: rabbitHop 1.55s ease-in-out infinite; }
+    .motion-seal_gray { animation: sealGoron 2.2s ease-in-out infinite; }
+    .motion-cat_purple { animation: catAmae 2.0s ease-in-out infinite; }
+    .motion-penguin_yellow { animation: penguinChokoChoko 1.45s ease-in-out infinite; }
+    .motion-lizard_green { animation: lizardKyoroKyoro 2.1s ease-in-out infinite; }
+
+    body.low-status-mode .pet-img {
+      animation: shikuShiku 1.25s ease-in-out infinite !important;
+      filter: brightness(0.84) saturate(0.82);
+    }
+
+    .fallback-pet {
+      width: 155px;
+      height: 155px;
+      border-radius: 48% 48% 42% 42%;
+      background: radial-gradient(circle at 35% 25%, #e5fbff, #5eb8ff 50%, #4b8ee8 100%);
+      margin: 18px auto;
+      position: relative;
+      animation: petBreath 2.4s ease-in-out infinite;
+    }
+
+    .fallback-pet::before,
+    .fallback-pet::after {
+      content: "";
+      position: absolute;
+      width: 46px;
+      height: 76px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #7fe3ff, #5aa9ff);
+      top: -44px;
+    }
+
+    .fallback-pet::before { left: 28px; transform: rotate(-18deg); }
+    .fallback-pet::after { right: 28px; transform: rotate(18deg); }
+
+    .fallback-face {
+      position: absolute;
+      top: 60px;
+      left: 0;
+      right: 0;
+      font-size: 28px;
+    }
+
+    .message {
+      min-height: 50px;
+      background: #f7fbff;
+      border: 2px solid #d8ecff;
+      border-radius: 20px;
+      padding: 12px;
+      font-size: 15px;
+      line-height: 1.7;
+      margin-top: 10px;
+    }
+
+    .collection-status {
+      margin: 12px 0 10px;
+      padding: 12px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #fff7fb, #f2f8ff);
+      border: 2px solid #e7f1ff;
+      text-align: left;
+    }
+
+    .collection-status-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: #5f6f98;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .heart-counter {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+      color: #e36f95;
+    }
+
+    .mini-progress {
+      height: 10px;
+      border-radius: 999px;
+      background: #edf4ff;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .mini-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff9cc4, #9dc8ff);
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    .collection-open-btn {
+      width: 100%;
+      margin: 10px 0 0;
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+
+    .status {
+      margin: 14px 0 10px;
+      text-align: left;
+    }
+
+    .bar-row { margin: 10px 0; }
+
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #5a6f8e;
+    }
+
+    .bar {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: #edf4ff;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #80d5ff, #b895ff);
+      width: 50%;
+      transition: width 0.25s ease;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .actions button {
+      width: 100%;
+      margin: 0;
+      padding: 13px 8px;
+    }
+
+    .choice-box {
+      margin-top: 16px;
+      background: #fffaf2;
+      border: 2px solid #ffe2b8;
+      border-radius: 22px;
+      padding: 14px;
+      display: none;
+    }
+
+    .mini-game {
+      margin-top: 16px;
+      background: #f7fbff;
+      border: 2px solid #d8ecff;
+      border-radius: 22px;
+      padding: 14px;
+      display: none;
+    }
+
+    .poop-field {
+      position: relative;
+      height: 160px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #effaff, #fff);
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .poop {
+      position: absolute;
+      font-size: 28px;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.2s ease;
+    }
+
+    .poop.cleaned {
+      transform: scale(0);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 24px;
+      animation: heartUp 1.3s ease-out forwards;
+      pointer-events: none;
+    }
+
+    .small {
+      font-size: 12px;
+      color: #7c8da5;
+      line-height: 1.6;
+    }
+
+    .low-status-scene {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.14), transparent 10%),
+        radial-gradient(circle at 82% 22%, rgba(255, 255, 255, 0.12), transparent 8%),
+        linear-gradient(180deg, rgba(36, 42, 92, 0.48), rgba(18, 22, 58, 0.68));
+      animation: lowStatusFadeIn 0.8s ease forwards;
+    }
+
+    .low-status-message {
+      position: absolute;
+      left: 50%;
+      bottom: 105px;
+      transform: translateX(-50%);
+      width: min(86%, 330px);
+      padding: 14px 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #5f6390;
+      text-align: center;
+      box-shadow: 0 12px 28px rgba(40, 40, 80, 0.18);
+      backdrop-filter: blur(6px);
+    }
+
+    .low-status-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .low-status-text {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .tear-layer {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 140px;
+      height: 145px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    .tear {
+      position: absolute;
+      width: 8px;
+      height: 12px;
+      border-radius: 50% 50% 58% 58%;
+      background: rgba(120, 190, 255, 0.9);
+      box-shadow: 0 2px 8px rgba(120, 190, 255, 0.45);
+      opacity: 0;
+      animation: tearDrop 1.4s ease-in infinite;
+    }
+
+    .tear.left { left: 42px; top: 52px; }
+    .tear.right { right: 42px; top: 52px; animation-delay: 0.45s; }
+    .tear.center { left: 66px; top: 64px; animation-delay: 0.9s; }
+
+    .reward-message {
+      position: fixed;
+      left: 50%;
+      top: 42%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 24px;
+      padding: 22px 28px;
+      box-shadow: 0 12px 32px rgba(120, 120, 180, 0.25);
+      text-align: center;
+      z-index: 10000;
+      font-weight: 700;
+      color: #6f6fa8;
+      pointer-events: none;
+      animation: rewardPop 2.3s ease forwards;
+    }
+
+    .reward-heart {
+      font-size: 42px;
+      margin-bottom: 8px;
+      animation: heartFloat 1.2s ease-in-out infinite;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 12000;
+      background: rgba(30, 34, 72, 0.38);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 18px;
+      box-sizing: border-box;
+    }
+
+    .modal-card {
+      width: min(100%, 390px);
+      max-height: 86vh;
+      overflow: auto;
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 28px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 18px 50px rgba(40, 40, 80, 0.26);
+    }
+
+    .gift-title {
+      color: #e36f95;
+      font-size: 20px;
+      margin: 6px 0 8px;
+      font-weight: 800;
+    }
+
+    .silhouette-big {
+      width: 150px;
+      max-width: 70%;
+      margin: 12px auto 8px;
+      display: block;
+      border-radius: 18px;
+      background: #fffaf7;
+    }
+
+    .silhouette-name {
+      font-size: 22px;
+      color: #4c5f91;
+      font-weight: 800;
+      margin: 8px 0 4px;
+    }
+
+    .silhouette-type {
+      font-size: 14px;
+      color: #e36f95;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .collection-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .collection-item {
+      border-radius: 14px;
+      background: #fff7fb;
+      border: 1px solid #f4ddec;
+      min-height: 72px;
+      padding: 6px 3px;
+      box-sizing: border-box;
+      font-size: 10px;
+      color: #5f6f98;
+    }
+
+    .collection-item.locked {
+      background: #f2f4f8;
+      color: #a8afbd;
+      filter: grayscale(1);
+      opacity: 0.68;
+    }
+
+    .collection-item img {
+      width: 50px;
+      height: 38px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 3px;
+    }
+
+    .collection-item.locked img {
+      opacity: 0.18;
+    }
+
+    .collection-number {
+      font-weight: 800;
+      color: #e36f95;
+    }
+
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes pop { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes petBreath { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.035); } }
+
+    @keyframes kangarooJump {
+      0%, 100% { transform: translateY(0) scaleX(1) scaleY(1); }
+      18% { transform: translateY(5px) scaleX(1.06) scaleY(0.94); }
+      45% { transform: translateY(-22px) scaleX(0.96) scaleY(1.06); }
+      68% { transform: translateY(0) scaleX(1.04) scaleY(0.96); }
+    }
+
+    @keyframes rabbitHop {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      30% { transform: translateY(3px) scaleX(1.03) scaleY(0.97); }
+      55% { transform: translateY(-11px) rotate(-1deg) scaleX(0.98) scaleY(1.03); }
+      75% { transform: translateY(0) rotate(1deg); }
+    }
+
+    @keyframes sealGoron {
+      0%, 100% { transform: translateX(0) rotate(0deg); }
+      22% { transform: translateX(-10px) rotate(-7deg); }
+      48% { transform: translateX(0) rotate(0deg); }
+      72% { transform: translateX(10px) rotate(7deg); }
+    }
+
+    @keyframes catAmae {
+      0%, 100% { transform: translateX(0) translateY(0) rotate(0deg) scale(1); }
+      25% { transform: translateX(-5px) translateY(2px) rotate(-3deg) scale(1.02); }
+      50% { transform: translateX(3px) translateY(0) rotate(2deg) scale(1.035); }
+      75% { transform: translateX(-2px) translateY(2px) rotate(-1deg) scale(1.02); }
+    }
+
+    @keyframes penguinChokoChoko {
+      0%, 100% { transform: translateX(0) rotate(0deg); }
+      15% { transform: translateX(-5px) rotate(-4deg); }
+      30% { transform: translateX(0) rotate(0deg); }
+      45% { transform: translateX(5px) rotate(4deg); }
+      60% { transform: translateX(0) rotate(0deg); }
+    }
+
+    @keyframes lizardKyoroKyoro {
+      0%, 100% { transform: translateX(0) rotate(0deg) scale(1); }
+      18% { transform: translateX(-4px) rotate(-4deg) scale(1.01); }
+      36% { transform: translateX(0) rotate(0deg) scale(1); }
+      58% { transform: translateX(5px) rotate(4deg) scale(1.01); }
+      78% { transform: translateX(0) rotate(0deg) scale(1); }
+    }
+
+    @keyframes heartUp {
+      0% { opacity: 1; transform: translateY(0) scale(0.8); }
+      100% { opacity: 0; transform: translateY(-95px) scale(1.4); }
+    }
+
+    @keyframes lowStatusFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    @keyframes shikuShiku {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(2px) rotate(-1.5deg); }
+      50% { transform: translateY(0) rotate(1.5deg); }
+      75% { transform: translateY(2px) rotate(-1deg); }
+    }
+
+    @keyframes tearDrop {
+      0% { opacity: 0; transform: translateY(0) scale(0.7); }
+      18% { opacity: 1; transform: translateY(4px) scale(1); }
+      80% { opacity: 0.9; transform: translateY(38px) scale(0.95); }
+      100% { opacity: 0; transform: translateY(52px) scale(0.8); }
+    }
+
+    @keyframes rewardPop {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+      15% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -55%) scale(0.95); }
+    }
+
+    @keyframes heartFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  </style>
+</head>
+
+<body>
+  <div class="app" id="app"></div>
+
+  <script>
+    const STORAGE_KEY = "free_care_mode_pet_v2_silhouette";
+    const LOW_STATUS_THRESHOLD = 30;
+    const HEARTS_PER_GIFT = 3;
+    const TOTAL_SILHOUETTES = 50;
+
+    const CHARACTERS = [
+      { id: "kangaroo_blue", happy: "public/assets/characters/kangaroo_blue/happy.png", sad: "public/assets/characters/kangaroo_blue/sad.png" },
+      { id: "penguin_yellow", happy: "public/assets/characters/penguin_yellow/happy.png", sad: "public/assets/characters/penguin_yellow/sad.png" },
+      { id: "rabbit_pink", happy: "public/assets/characters/rabbit_pink/happy.png", sad: "public/assets/characters/rabbit_pink/sad.png" },
+      { id: "seal_gray", happy: "public/assets/characters/seal_gray/happy.png", sad: "public/assets/characters/seal_gray/sad.png" },
+      { id: "lizard_green", happy: "public/assets/characters/lizard_green/happy.png", sad: "public/assets/characters/lizard_green/sad.png" },
+      { id: "cat_purple", happy: "public/assets/characters/cat_purple/happy.png", sad: "public/assets/characters/cat_purple/sad.png" }
+    ];
+
+    const SILHOUETTES = [
+      { id: 1, name: "メダカ", type: "静かに見守る", message: "小さな変化を毎日そっと見守る相棒です。", image: "public/assets/silhouettes/silhouette_01.png" },
+      { id: 2, name: "金魚", type: "静かに見守る", message: "ゆったり泳ぐ姿に癒される相棒です。", image: "public/assets/silhouettes/silhouette_02.png" },
+      { id: 3, name: "ベタ", type: "静かに見守る", message: "静かな時間の中に小さな華やかさをくれる相棒です。", image: "public/assets/silhouettes/silhouette_03.png" },
+      { id: 4, name: "グッピー", type: "変化を楽しむ", message: "小さな動きや変化を楽しませてくれる相棒です。", image: "public/assets/silhouettes/silhouette_04.png" },
+      { id: 5, name: "ミナミヌマエビ", type: "観察する", message: "細かな動きに気づく楽しさがある相棒です。", image: "public/assets/silhouettes/silhouette_05.png" },
+      { id: 6, name: "カタツムリ", type: "ゆっくり寄りそう", message: "急がない時間をくれる相棒です。", image: "public/assets/silhouettes/silhouette_06.png" },
+      { id: 7, name: "オカヤドカリ", type: "小さな冒険", message: "小さな世界を探検する姿が楽しい相棒です。", image: "public/assets/silhouettes/silhouette_07.png" },
+      { id: 8, name: "カブトムシ", type: "季節を楽しむ", message: "夏の元気を感じさせてくれる相棒です。", image: "public/assets/silhouettes/silhouette_08.png" },
+      { id: 9, name: "クワガタ", type: "じっくり観察", message: "静かな強さを感じる相棒です。", image: "public/assets/silhouettes/silhouette_09.png" },
+      { id: 10, name: "鈴虫", type: "音で寄りそう", message: "夜の時間を少し豊かにしてくれる相棒です。", image: "public/assets/silhouettes/silhouette_10.png" },
+      { id: 11, name: "ハムスター", type: "かわいがる", message: "小さな動きに心がゆるむ相棒です。", image: "public/assets/silhouettes/silhouette_11.png" },
+      { id: 12, name: "モルモット", type: "やさしく関わる", message: "声や反応がかわいい相棒です。", image: "public/assets/silhouettes/silhouette_12.png" },
+      { id: 13, name: "うさぎ", type: "そっと甘える", message: "近づきすぎず、でもそばにいる相棒です。", image: "public/assets/silhouettes/silhouette_13.png" },
+      { id: 14, name: "文鳥", type: "信頼を育てる", message: "毎日の声かけに応えてくれる相棒です。", image: "public/assets/silhouettes/silhouette_14.png" },
+      { id: 15, name: "セキセイインコ", type: "会話を楽しむ", message: "明るい反応を返してくれる相棒です。", image: "public/assets/silhouettes/silhouette_15.png" },
+      { id: 16, name: "猫", type: "距離感上手", message: "自由さと愛着の両方を大切にする相棒です。", image: "public/assets/silhouettes/silhouette_16.png" },
+      { id: 17, name: "犬", type: "一緒に動く", message: "一緒に歩き、関わりを深く育てたい相棒です。", image: "public/assets/silhouettes/silhouette_17.png" },
+      { id: 18, name: "リクガメ", type: "長く見守る", message: "長い時間をかけて関係を育てる相棒です。", image: "public/assets/silhouettes/silhouette_18.png" },
+      { id: 19, name: "ヒョウモントカゲモドキ", type: "静かな個性", message: "観察すると味わい深い相棒です。", image: "public/assets/silhouettes/silhouette_19.png" },
+      { id: 20, name: "フェレット", type: "遊び好き", message: "遊びながら関係を作りたい人に合う相棒です。", image: "public/assets/silhouettes/silhouette_20.png" },
+      { id: 21, name: "チンチラ", type: "やわらかい距離感", message: "触れたい気持ちと相手のペースの両方が大切な相棒です。", image: "public/assets/silhouettes/silhouette_21.png" },
+      { id: 22, name: "ペンギン", type: "水族館で会う", message: "てくてく進む勇気をくれる相棒です。", image: "public/assets/silhouettes/silhouette_22.png" },
+      { id: 23, name: "アザラシ", type: "水族館で会う", message: "のんびりした安心感をくれる相棒です。", image: "public/assets/silhouettes/silhouette_23.png" },
+      { id: 24, name: "イルカ", type: "水族館で会う", message: "軽やかに進む気持ちをくれる相棒です。", image: "public/assets/silhouettes/silhouette_24.png" },
+      { id: 25, name: "カワウソ", type: "動物園・水族館で会う", message: "遊び心いっぱいの相棒です。", image: "public/assets/silhouettes/silhouette_25.png" },
+      { id: 26, name: "レッサーパンダ", type: "動物園で会う", message: "かわいさとマイペースさの相棒です。", image: "public/assets/silhouettes/silhouette_26.png" },
+      { id: 27, name: "カピバラ", type: "動物園で会う", message: "そばにいるだけで場がやわらかくなる相棒です。", image: "public/assets/silhouettes/silhouette_27.png" },
+      { id: 28, name: "ライオン", type: "動物園で会う", message: "強さと誇りをくれる相棒です。", image: "public/assets/silhouettes/silhouette_28.png" },
+      { id: 29, name: "ゾウ", type: "動物園で会う", message: "大きな安心感をくれる相棒です。", image: "public/assets/silhouettes/silhouette_29.png" },
+      { id: 30, name: "キリン", type: "動物園で会う", message: "少し高い視点をくれる相棒です。", image: "public/assets/silhouettes/silhouette_30.png" },
+      { id: 31, name: "ハリネズミ", type: "そっと見守る", message: "相手のペースを大切にする関わりが似合う相棒です。", image: "public/assets/silhouettes/silhouette_31.png" },
+      { id: 32, name: "デグー", type: "元気に関わる", message: "毎日の小さな交流を楽しみたい人に合う相棒です。", image: "public/assets/silhouettes/silhouette_32.png" },
+      { id: 33, name: "ウーパールーパー", type: "静かに癒される", message: "眺めているだけで気持ちがやわらぐ相棒です。", image: "public/assets/silhouettes/silhouette_33.png" },
+      { id: 34, name: "イモリ", type: "じっくり観察", message: "小さな世界を静かに生きる相棒です。", image: "public/assets/silhouettes/silhouette_34.png" },
+      { id: 35, name: "カエル", type: "小さな変化を楽しむ", message: "ぴょんと動くたびに楽しい相棒です。", image: "public/assets/silhouettes/silhouette_35.png" },
+      { id: 36, name: "コーンスネーク", type: "落ち着いて関わる", message: "静かで美しい動きの相棒です。", image: "public/assets/silhouettes/silhouette_36.png" },
+      { id: 37, name: "ニワトリ", type: "朝を元気にする", message: "毎日にリズムをくれる相棒です。", image: "public/assets/silhouettes/silhouette_37.png" },
+      { id: 38, name: "ロバ", type: "ゆっくり支える", message: "焦らず進む気持ちをくれる相棒です。", image: "public/assets/silhouettes/silhouette_38.png" },
+      { id: 39, name: "ヤギ", type: "のびのび触れ合う", message: "好奇心いっぱいの相棒です。", image: "public/assets/silhouettes/silhouette_39.png" },
+      { id: 40, name: "ヒツジ", type: "ほっと落ち着く", message: "ふわっと安心感をくれる相棒です。", image: "public/assets/silhouettes/silhouette_40.png" },
+      { id: 41, name: "アルパカ", type: "牧場で会う", message: "ふしぎな愛嬌のある相棒です。", image: "public/assets/silhouettes/silhouette_41.png" },
+      { id: 42, name: "ミーアキャット", type: "動物園で会う", message: "周りを見渡す勇気をくれる相棒です。", image: "public/assets/silhouettes/silhouette_42.png" },
+      { id: 43, name: "フクロウ", type: "動物園で会う", message: "静かなまなざしを感じる相棒です。", image: "public/assets/silhouettes/silhouette_43.png" },
+      { id: 44, name: "ラッコ", type: "水族館で会う", message: "ぷかぷかした姿に癒される相棒です。", image: "public/assets/silhouettes/silhouette_44.png" },
+      { id: 45, name: "シロクマ", type: "動物園で会う", message: "大きくて静かな力を感じる相棒です。", image: "public/assets/silhouettes/silhouette_45.png" },
+      { id: 46, name: "オオカミ", type: "動物園で会う", message: "凛とした存在感の相棒です。", image: "public/assets/silhouettes/silhouette_46.png" },
+      { id: 47, name: "コアラ", type: "動物園で会う", message: "のんびり休む大切さを教えてくれる相棒です。", image: "public/assets/silhouettes/silhouette_47.png" },
+      { id: 48, name: "パンダ", type: "動物園で会う", message: "やさしい存在感で心をゆるめてくれる相棒です。", image: "public/assets/silhouettes/silhouette_48.png" },
+      { id: 49, name: "カメレオン", type: "静かに観察", message: "環境に合わせて変化する相棒です。", image: "public/assets/silhouettes/silhouette_49.png" },
+      { id: 50, name: "ナマケモノ", type: "動物園で会う", message: "自分のペースを大切にしたい人に合う相棒です。", image: "public/assets/silhouettes/silhouette_50.png" }
+    ];
+
+    let state = {
+      screen: "start",
+      petName: "",
+      characterId: "",
+      mood: "happy",
+      affection: 55,
+      hunger: 60,
+      cleanliness: 70,
+      energy: 65,
+      message: "その相棒と自由にお世話を続けましょう。",
+      totalHearts: 0,
+      heartBank: 0,
+      collectedSilhouettes: []
+    };
+
+    let wasAllFull = false;
+    const app = document.getElementById("app");
+
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function load() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      try {
+        const saved = JSON.parse(raw);
+        state = { ...state, ...saved };
+        if (!Array.isArray(state.collectedSilhouettes)) state.collectedSilhouettes = [];
+        if (typeof state.totalHearts !== "number") state.totalHearts = 0;
+        if (typeof state.heartBank !== "number") state.heartBank = 0;
+        if (state.mood === "sleep") state.mood = "happy";
+      } catch (e) {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+
+    function clamp(value) { return Math.max(0, Math.min(100, value)); }
+
+    function getAverageCareStatus() {
+      return (Number(state.affection || 0) + Number(state.hunger || 0) + Number(state.cleanliness || 0) + Number(state.energy || 0)) / 4;
+    }
+
+    function isLowStatusScene() {
+      return state.screen === "care" && getAverageCareStatus() <= LOW_STATUS_THRESHOLD;
+    }
+
+    function isAllFull() {
+      return state.affection >= 100 && state.hunger >= 100 && state.cleanliness >= 100 && state.energy >= 100;
+    }
+
+    function applySceneClass() {
+      document.body.classList.toggle("low-status-mode", isLowStatusScene());
+    }
+
+    function getCharacter() {
+      return CHARACTERS.find(c => c.id === state.characterId) || CHARACTERS[0];
+    }
+
+    function getPetImage() {
+      const character = getCharacter();
+      if (state.mood === "sad" || isLowStatusScene()) return character.sad;
+      return character.happy;
+    }
+
+    function getMotionClass() {
+      if (!state.characterId) return "";
+      return `motion-${state.characterId}`;
+    }
+
+    function getCollectedCount() { return state.collectedSilhouettes.length; }
+
+    function addCareHeart() {
+      state.totalHearts += 1;
+
+      if (getCollectedCount() >= TOTAL_SILHOUETTES) {
+        return null;
+      }
+
+      state.heartBank += 1;
+
+      if (state.heartBank >= HEARTS_PER_GIFT) {
+        state.heartBank -= HEARTS_PER_GIFT;
+        return unlockSilhouette();
+      }
+
+      return null;
+    }
+
+    function unlockSilhouette() {
+      const collected = new Set(state.collectedSilhouettes);
+      const candidates = SILHOUETTES.filter(item => !collected.has(item.id));
+      if (candidates.length === 0) return null;
+      const item = candidates[Math.floor(Math.random() * candidates.length)];
+      state.collectedSilhouettes.push(item.id);
+      return item;
+    }
+
+    function finishAction(options = {}) {
+      const allFullBefore = wasAllFull;
+      let newGift = null;
+
+      if (options.awardHeart) {
+        newGift = addCareHeart();
+      }
+
+      save();
+      render();
+
+      const allFullNow = isAllFull();
+
+      if (allFullNow && !allFullBefore && !isLowStatusScene()) {
+        setTimeout(showFullReward, 80);
+      }
+
+      wasAllFull = allFullNow;
+
+      if (options.hearts) {
+        setTimeout(makeHearts, 40);
+      }
+
+      if (newGift) {
+        setTimeout(() => showSilhouetteGift(newGift), 250);
+      } else if (getCollectedCount() === TOTAL_SILHOUETTES && options.awardHeart && state.totalHearts === TOTAL_SILHOUETTES * HEARTS_PER_GIFT) {
+        setTimeout(showCompleteGift, 250);
+      }
+    }
+
+    function collectionStatusHtml() {
+      const next = getCollectedCount() >= TOTAL_SILHOUETTES ? 0 : HEARTS_PER_GIFT - state.heartBank;
+      const progress = getCollectedCount() >= TOTAL_SILHOUETTES ? 100 : (state.heartBank / HEARTS_PER_GIFT) * 100;
+      const nextText = getCollectedCount() >= TOTAL_SILHOUETTES ? "図鑑コンプリート" : `あと${next}こでプレゼント`;
+      return `
+        <div class="collection-status">
+          <div class="collection-status-main">
+            <span class="heart-counter">💗 ${state.totalHearts}</span>
+            <span>🎁 ${nextText}</span>
+            <span>図鑑 ${getCollectedCount()}/${TOTAL_SILHOUETTES}</span>
+          </div>
+          <div class="mini-progress">
+            <div class="mini-progress-fill" style="width:${progress}%"></div>
+          </div>
+          <button class="collection-open-btn secondary" onclick="openCollection()">シルエット図鑑を見る</button>
+        </div>
+      `;
+    }
+
+    function showSilhouetteGift(item) {
+      closeModal();
+      const modal = document.createElement("div");
+      modal.className = "modal-backdrop";
+      modal.id = "activeModal";
+      modal.innerHTML = `
+        <div class="modal-card">
+          <div class="gift-title">シルエットプレゼントが届きました</div>
+          <p class="small">ハートが3こたまったので、新しい相棒シルエットを見つけました。</p>
+          <img class="silhouette-big" src="${item.image}" alt="${escapeHtml(item.name)}">
+          <div class="silhouette-name">No.${item.id} ${escapeHtml(item.name)}</div>
+          <div class="silhouette-type">${escapeHtml(item.type)}</div>
+          <p>${escapeHtml(item.message)}</p>
+          <button onclick="openCollection()">図鑑を見る</button>
+          <button class="secondary" onclick="closeModal()">閉じる</button>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function showCompleteGift() {
+      closeModal();
+      const modal = document.createElement("div");
+      modal.className = "modal-backdrop";
+      modal.id = "activeModal";
+      modal.innerHTML = `
+        <div class="modal-card">
+          <div class="gift-title">シルエット図鑑完成</div>
+          <p>50種類の相棒シルエットがすべて集まりました。</p>
+          <p class="small">たくさんお世話を続けてくれてありがとう。</p>
+          <button onclick="openCollection()">図鑑を見る</button>
+          <button class="secondary" onclick="closeModal()">閉じる</button>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function openCollection() {
+      closeModal();
+      const collected = new Set(state.collectedSilhouettes);
+      const grid = SILHOUETTES.map(item => {
+        const has = collected.has(item.id);
+        return `
+          <div class="collection-item ${has ? "" : "locked"}" title="${has ? escapeHtml(item.name) : "まだ見つけていません"}">
+            <img src="${item.image}" alt="${has ? escapeHtml(item.name) : "?"}">
+            <div class="collection-number">${item.id}</div>
+            <div>${has ? escapeHtml(item.name) : "？？？"}</div>
+          </div>
+        `;
+      }).join("");
+
+      const modal = document.createElement("div");
+      modal.className = "modal-backdrop";
+      modal.id = "activeModal";
+      modal.innerHTML = `
+        <div class="modal-card">
+          <h2>シルエット図鑑</h2>
+          <p class="small">ハート3こで、まだ持っていないシルエットが1つ届きます。</p>
+          <p><strong>${getCollectedCount()} / ${TOTAL_SILHOUETTES}</strong> 種類 集まりました</p>
+          <div class="collection-grid">${grid}</div>
+          <button class="secondary" onclick="closeModal()">閉じる</button>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById("activeModal");
+      if (modal) modal.remove();
+    }
+
+    function showFullReward() {
+      const oldReward = document.querySelector(".reward-message");
+      if (oldReward) oldReward.remove();
+      const reward = document.createElement("div");
+      reward.className = "reward-message";
+      reward.innerHTML = `<div class="reward-heart">💗</div><div>とっても満たされているみたい</div>`;
+      document.body.appendChild(reward);
+      setTimeout(() => reward.remove(), 2400);
+    }
+
+    function lowStatusTearsHtml() {
+      return `<div class="tear-layer"><div class="tear left"></div><div class="tear right"></div><div class="tear center"></div></div>`;
+    }
+
+    function lowStatusSceneHtml() {
+      const name = state.petName || "○○";
+      return `
+        <div id="lowStatusScene" class="low-status-scene">
+          <div class="low-status-message">
+            <div class="low-status-title">少し元気がないみたいです</div>
+            <div class="low-status-text">${escapeHtml(name)}は、しくしくしています</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function showStart() {
+      app.innerHTML = `
+        <div class="card">
+          <h1>自由なお世話モード</h1>
+          <p>ここでは、相棒と自由にお世話を続けられます。</p>
+          <p>ごはんをあげたり、おでかけしたり、なでたり、きれいにしたりしながら、その相棒との時間を楽しんでください。</p>
+          <button onclick="goGift()">はじめる</button>
+        </div>
+      `;
+    }
+
+    function goGift() { state.screen = "gift"; save(); render(); }
+
+    function showGift() {
+      app.innerHTML = `
+        <div class="card">
+          <h2>プレゼントが届きました</h2>
+          <p>プレゼントをクリックしてみてね。</p>
+          <div class="gift" onclick="openGift()">
+            <div class="gift-lid"></div><div class="gift-box"></div><div class="gift-ribbon-v"></div><div class="gift-ribbon-h"></div>
+          </div>
+          <p class="small">この自由モードでは、研究用の条件変化はありません。</p>
+        </div>
+      `;
+    }
+
+    function openGift() { state.screen = "macaron"; save(); render(); }
+
+    function showMacaron() {
+      app.innerHTML = `
+        <div class="card">
+          <h2>マカロンが出てきました</h2>
+          <p>マカロンをクリックしてみてね。</p>
+          <div class="macaron" onclick="birthPet()">
+            <div class="macaron-top"></div><div class="macaron-cream"></div><div class="macaron-bottom"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function birthPet() {
+      const randomCharacter = CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
+      state.characterId = randomCharacter.id;
+      state.screen = "name";
+      state.mood = "happy";
+      state.affection = 55;
+      state.hunger = 60;
+      state.cleanliness = 70;
+      state.energy = 65;
+      state.message = "名前をつけてね。";
+      save();
+      render();
+    }
+
+    function showNameInput() {
+      const img = getPetImage();
+      const motionClass = getMotionClass();
+      app.innerHTML = `
+        <div class="card">
+          <h2>名前をつけてね</h2>
+          <div class="pet-area">
+            <img class="pet-img ${motionClass}" src="${img}" alt="相棒" onerror="showFallbackPet(this)">
+          </div>
+          <input id="petNameInput" type="text" maxlength="12" placeholder="名前を入力" />
+          <br>
+          <button onclick="savePetName()">この名前にする</button>
+        </div>
+      `;
+    }
+
+    function savePetName() {
+      const input = document.getElementById("petNameInput");
+      const name = input.value.trim();
+      if (!name) { alert("名前を入力してください。"); return; }
+      state.petName = name;
+      state.screen = "care";
+      state.message = `${state.petName}と自由にお世話を続けましょう。`;
+      save();
+      render();
+    }
+
+    function showCare() {
+      const img = getPetImage();
+      const lowStatus = isLowStatusScene();
+      const motionClass = getMotionClass();
+      app.innerHTML = `
+        <div class="card">
+          <h1>${escapeHtml(state.petName)}</h1>
+          <div class="pet-area" id="petArea">
+            <img class="pet-img ${motionClass}" src="${img}" alt="相棒" onclick="petTouch()" onerror="showFallbackPet(this)">
+            ${lowStatus ? lowStatusTearsHtml() : ""}
+          </div>
+          <div class="message">${escapeHtml(state.message)}</div>
+          ${collectionStatusHtml()}
+          <div class="status">
+            ${bar("なかよし", state.affection)}
+            ${bar("おなか", state.hunger)}
+            ${bar("きれい", state.cleanliness)}
+            ${bar("げんき", state.energy)}
+          </div>
+          <div class="actions">
+            <button onclick="showFoodChoices()">ごはん</button>
+            <button onclick="showWalkChoices()">おでかけ</button>
+            <button onclick="petTouch()">なでる</button>
+            <button onclick="startCleanGame()">きれいにする</button>
+          </div>
+          <div class="choice-box" id="choiceBox"></div>
+          <div class="mini-game" id="cleanGame"></div>
+          <button class="secondary" onclick="smallRest()">様子を見る</button>
+          <button class="danger" onclick="resetGame()">リセット</button>
+        </div>
+        ${lowStatus ? lowStatusSceneHtml() : ""}
+      `;
+    }
+
+    function bar(label, value) {
+      const safeValue = clamp(value);
+      return `
+        <div class="bar-row">
+          <div class="bar-label"><span>${label}</span><span>${safeValue}</span></div>
+          <div class="bar"><div class="bar-fill" style="width:${safeValue}%"></div></div>
+        </div>
+      `;
+    }
+
+    function showFoodChoices() {
+      hideCleanGame();
+      const box = document.getElementById("choiceBox");
+      box.style.display = "block";
+      box.innerHTML = `<h2>ごはんを選んでね</h2><button onclick="giveFood('macaron')">小さなマカロン</button><button onclick="giveFood('milk')">ふわふわミルク</button>`;
+    }
+
+    function giveFood(type) {
+      if (type === "macaron") {
+        state.hunger = clamp(state.hunger + 20);
+        state.affection = clamp(state.affection + 8);
+        state.energy = clamp(state.energy + 5);
+        state.mood = "happy";
+        state.message = `${state.petName}は小さなマカロンをうれしそうに食べています。`;
+      } else {
+        state.hunger = clamp(state.hunger + 15);
+        state.affection = clamp(state.affection + 10);
+        state.energy = clamp(state.energy + 8);
+        state.mood = "happy";
+        state.message = `${state.petName}はふわふわミルクでほっとしています。`;
+      }
+      finishAction({ awardHeart: true });
+    }
+
+    function showWalkChoices() {
+      hideCleanGame();
+      const box = document.getElementById("choiceBox");
+      box.style.display = "block";
+      box.innerHTML = `<h2>どこへ行く？</h2><button onclick="goWalk('park')">雲の公園</button><button onclick="goWalk('star')">星の丘</button>`;
+    }
+
+    function goWalk(place) {
+      if (place === "park") {
+        state.energy = clamp(state.energy - 10);
+        state.affection = clamp(state.affection + 12);
+        state.cleanliness = clamp(state.cleanliness - 8);
+        state.mood = "happy";
+        state.message = `${state.petName}は雲の公園で楽しそうに遊びました。`;
+      } else {
+        state.energy = clamp(state.energy - 12);
+        state.affection = clamp(state.affection + 14);
+        state.cleanliness = clamp(state.cleanliness - 6);
+        state.mood = "happy";
+        state.message = `${state.petName}は星の丘で空を見上げています。`;
+      }
+      finishAction({ awardHeart: true });
+    }
+
+    function petTouch() {
+      state.affection = clamp(state.affection + 8);
+      state.energy = clamp(state.energy + 2);
+      state.mood = "happy";
+      state.message = `${state.petName}はうれしそうです。`;
+      finishAction({ hearts: true, awardHeart: true });
+    }
+
+    function makeHearts() {
+      const area = document.getElementById("petArea");
+      if (!area) return;
+      for (let i = 0; i < 12; i++) {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.textContent = ["💙", "💜", "💗", "✨"][Math.floor(Math.random() * 4)];
+        heart.style.left = `${80 + Math.random() * 180}px`;
+        heart.style.top = `${95 + Math.random() * 70}px`;
+        heart.style.animationDelay = `${Math.random() * 0.25}s`;
+        area.appendChild(heart);
+        setTimeout(() => heart.remove(), 1600);
+      }
+    }
+
+    function startCleanGame() {
+      const choiceBox = document.getElementById("choiceBox");
+      if (choiceBox) { choiceBox.style.display = "none"; choiceBox.innerHTML = ""; }
+      const game = document.getElementById("cleanGame");
+      game.style.display = "block";
+      game.innerHTML = `<h2>きれいにしよう</h2><p>うんちをクリックして片づけてね。</p><div class="poop-field" id="poopField"></div>`;
+      const field = document.getElementById("poopField");
+      const positions = [
+        { left: 26, top: 28 }, { left: 115, top: 58 }, { left: 245, top: 30 }, { left: 70, top: 112 }, { left: 295, top: 105 }
+      ];
+      positions.forEach((pos) => {
+        const poop = document.createElement("div");
+        poop.className = "poop";
+        poop.textContent = "💩";
+        poop.style.left = `${pos.left}px`;
+        poop.style.top = `${pos.top}px`;
+        poop.dataset.cleaned = "false";
+        poop.onclick = () => cleanPoop(poop);
+        field.appendChild(poop);
+      });
+    }
+
+    function cleanPoop(poop) {
+      poop.classList.add("cleaned");
+      poop.dataset.cleaned = "true";
+      const allPoops = Array.from(document.querySelectorAll(".poop"));
+      const allCleaned = allPoops.every(p => p.dataset.cleaned === "true");
+      if (allCleaned) {
+        state.cleanliness = clamp(state.cleanliness + 25);
+        state.affection = clamp(state.affection + 6);
+        state.mood = "happy";
+        state.message = `${state.petName}のまわりがきれいになりました。`;
+        setTimeout(() => finishAction({ awardHeart: true }), 450);
+      }
+    }
+
+    function hideCleanGame() {
+      const game = document.getElementById("cleanGame");
+      if (game) { game.style.display = "none"; game.innerHTML = ""; }
+    }
+
+    function smallRest() {
+      state.energy = clamp(state.energy + 8);
+      state.hunger = clamp(state.hunger - 3);
+      if (state.hunger < 25 || state.cleanliness < 25) {
+        state.mood = "sad";
+        state.message = `${state.petName}は少し気にしているみたいです。お世話してあげるとよさそうです。`;
+      } else {
+        state.mood = "happy";
+        state.message = `${state.petName}はそばでのんびりしています。`;
+      }
+      finishAction({ awardHeart: true });
+    }
+
+    function resetGame() {
+      const ok = confirm("自由なお世話モードを最初からやり直しますか？\n集めたシルエット図鑑もリセットされます。");
+      if (!ok) return;
+      localStorage.removeItem(STORAGE_KEY);
+      state = {
+        screen: "start",
+        petName: "",
+        characterId: "",
+        mood: "happy",
+        affection: 55,
+        hunger: 60,
+        cleanliness: 70,
+        energy: 65,
+        message: "その相棒と自由にお世話を続けましょう。",
+        totalHearts: 0,
+        heartBank: 0,
+        collectedSilhouettes: []
+      };
+      wasAllFull = false;
+      render();
+    }
+
+    function showFallbackPet(img) {
+      img.outerHTML = `<div class="fallback-pet" onclick="petTouch()"><div class="fallback-face">´ ᴗ \`</div></div>`;
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function render() {
+      if (state.screen === "start") showStart();
+      else if (state.screen === "gift") showGift();
+      else if (state.screen === "macaron") showMacaron();
+      else if (state.screen === "name") showNameInput();
+      else if (state.screen === "care") showCare();
+      else { state.screen = "start"; save(); showStart(); }
+      applySceneClass();
+    }
+
+    load();
+    wasAllFull = isAllFull();
+    render();
+  </script>
+</body>
+</html>
