@@ -159,6 +159,17 @@
       animation: pop 0.8s ease, float 2.5s ease-in-out infinite;
     }
 
+    .macaron-img {
+      width: 170px;
+      max-width: 78%;
+      margin: 28px auto;
+      display: block;
+      cursor: pointer;
+      animation: pop 0.8s ease, float 2.5s ease-in-out infinite;
+      user-select: none;
+      filter: drop-shadow(0 12px 18px rgba(120, 140, 180, 0.18));
+    }
+
     .macaron-top,
     .macaron-bottom {
       width: 155px;
@@ -1006,14 +1017,56 @@
 
     function openGift() { state.screen = "macaron"; save(); render(); }
 
+    function getMacaronImage() {
+      const macarons = [
+        "public/assets/macarons/blue_crystal_macaron.png",
+        "public/assets/macarons/blue_macaron.png",
+        "public/assets/macarons/green_crystal_macaron.png",
+        "public/assets/macarons/green_macaron.png",
+        "public/assets/macarons/pink_crystal_macaron.png",
+        "public/assets/macarons/pink_macaron.png",
+        "public/assets/macarons/purple_crystal_macaron.png",
+        "public/assets/macarons/purple_macaron.png",
+        "public/assets/macarons/white_crystal_macaron.png",
+        "public/assets/macarons/white_macaron.png",
+        "public/assets/macarons/yellow_crystal_macaron.png",
+        "public/assets/macarons/yellow_macaron.png"
+      ];
+
+      return macarons[Math.floor(Math.random() * macarons.length)];
+    }
+
     function showMacaron() {
+      const macaronImg = getMacaronImage();
+
       app.innerHTML = `
         <div class="card">
           <h2>マカロンが出てきました</h2>
           <p>マカロンをクリックしてみてね。</p>
-          <div class="macaron" onclick="birthPet()">
-            <div class="macaron-top"></div><div class="macaron-cream"></div><div class="macaron-bottom"></div>
-          </div>
+
+          <img
+            class="macaron-img"
+            src="${macaronImg}"
+            alt="マカロン"
+            onclick="birthPet()"
+            onerror="showCssMacaronFallback()"
+          >
+        </div>
+      `;
+    }
+
+    function showCssMacaronFallback() {
+      const card = document.querySelector(".card");
+      if (!card) return;
+
+      card.innerHTML = `
+        <h2>マカロンが出てきました</h2>
+        <p>マカロンをクリックしてみてね。</p>
+
+        <div class="macaron" onclick="birthPet()">
+          <div class="macaron-top"></div>
+          <div class="macaron-cream"></div>
+          <div class="macaron-bottom"></div>
         </div>
       `;
     }
