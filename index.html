@@ -181,6 +181,41 @@
       filter: drop-shadow(0 12px 18px rgba(120, 140, 180, 0.18));
     }
 
+    .macaron-wait-box {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 20px;
+      background: #f7fbff;
+      border: 2px solid #d8ecff;
+      color: #5a6f8e;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .macaron-countdown {
+      font-size: 28px;
+      font-weight: 800;
+      color: #4c7fcf;
+      margin: 4px 0;
+    }
+
+    .macaron-progress {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: #edf4ff;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .macaron-progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #80d5ff, #b895ff);
+      width: 0%;
+      transition: width 0.35s ease;
+    }
+
     .macaron-top,
     .macaron-bottom {
       width: 155px;
@@ -324,6 +359,29 @@
       margin: 10px 0 0;
       padding: 10px 12px;
       font-size: 13px;
+    }
+
+    .sleep-panel {
+      margin-top: 14px;
+      padding: 15px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #f7fbff, #fff7fb);
+      border: 2px solid #e7f1ff;
+      color: #5f6f98;
+      line-height: 1.7;
+    }
+
+    .sleep-panel-title {
+      font-weight: 800;
+      color: #4c7fcf;
+      margin-bottom: 6px;
+    }
+
+    .daily-limit-note {
+      margin-top: 10px;
+      color: #7c8da5;
+      font-size: 13px;
+      line-height: 1.7;
     }
 
     .status {
@@ -689,18 +747,34 @@
   <div class="app" id="app"></div>
 
   <script>
-    const STORAGE_KEY = "free_care_mode_pet_v2_silhouette";
+    const STORAGE_KEY = "free_care_mode_pet_v3_daily_silhouette";
     const LOW_STATUS_THRESHOLD = 30;
-    const HEARTS_PER_GIFT = 3;
+    const MAX_DAILY_SILHOUETTE_GIFTS = 4;
     const TOTAL_SILHOUETTES = 50;
+    const MACARON_BIRTH_WAIT_MS = 30000;
+
+    const MACARON_OPTIONS = [
+      { color: "blue", label: "青いマカロン", image: "public/assets/macarons/blue_macaron.png", characterId: "kangaroo_blue" },
+      { color: "blue", label: "青いクリスタルマカロン", image: "public/assets/macarons/blue_crystal_macaron.png", characterId: "kangaroo_blue" },
+      { color: "green", label: "緑のマカロン", image: "public/assets/macarons/green_macaron.png", characterId: "lizard_green" },
+      { color: "green", label: "緑のクリスタルマカロン", image: "public/assets/macarons/green_crystal_macaron.png", characterId: "lizard_green" },
+      { color: "pink", label: "ピンクのマカロン", image: "public/assets/macarons/pink_macaron.png", characterId: "rabbit_pink" },
+      { color: "pink", label: "ピンクのクリスタルマカロン", image: "public/assets/macarons/pink_crystal_macaron.png", characterId: "rabbit_pink" },
+      { color: "purple", label: "紫のマカロン", image: "public/assets/macarons/purple_macaron.png", characterId: "cat_purple" },
+      { color: "purple", label: "紫のクリスタルマカロン", image: "public/assets/macarons/purple_crystal_macaron.png", characterId: "cat_purple" },
+      { color: "white", label: "白いマカロン", image: "public/assets/macarons/white_macaron.png", characterId: "seal_gray" },
+      { color: "white", label: "白いクリスタルマカロン", image: "public/assets/macarons/white_crystal_macaron.png", characterId: "seal_gray" },
+      { color: "yellow", label: "黄色のマカロン", image: "public/assets/macarons/yellow_macaron.png", characterId: "penguin_yellow" },
+      { color: "yellow", label: "黄色のクリスタルマカロン", image: "public/assets/macarons/yellow_crystal_macaron.png", characterId: "penguin_yellow" }
+    ];
 
     const CHARACTERS = [
-      { id: "kangaroo_blue", happy: "public/assets/characters/kangaroo_blue/happy.png", sad: "public/assets/characters/kangaroo_blue/sad.png" },
-      { id: "penguin_yellow", happy: "public/assets/characters/penguin_yellow/happy.png", sad: "public/assets/characters/penguin_yellow/sad.png" },
-      { id: "rabbit_pink", happy: "public/assets/characters/rabbit_pink/happy.png", sad: "public/assets/characters/rabbit_pink/sad.png" },
-      { id: "seal_gray", happy: "public/assets/characters/seal_gray/happy.png", sad: "public/assets/characters/seal_gray/sad.png" },
-      { id: "lizard_green", happy: "public/assets/characters/lizard_green/happy.png", sad: "public/assets/characters/lizard_green/sad.png" },
-      { id: "cat_purple", happy: "public/assets/characters/cat_purple/happy.png", sad: "public/assets/characters/cat_purple/sad.png" }
+      { id: "kangaroo_blue", happy: "public/assets/characters/kangaroo_blue/happy.png", sad: "public/assets/characters/kangaroo_blue/sad.png", sleep: "public/assets/characters/kangaroo_blue/sleep.png" },
+      { id: "penguin_yellow", happy: "public/assets/characters/penguin_yellow/happy.png", sad: "public/assets/characters/penguin_yellow/sad.png", sleep: "public/assets/characters/penguin_yellow/sleep.png" },
+      { id: "rabbit_pink", happy: "public/assets/characters/rabbit_pink/happy.png", sad: "public/assets/characters/rabbit_pink/sad.png", sleep: "public/assets/characters/rabbit_pink/sleep.png" },
+      { id: "seal_gray", happy: "public/assets/characters/seal_gray/happy.png", sad: "public/assets/characters/seal_gray/sad.png", sleep: "public/assets/characters/seal_gray/sleep.png" },
+      { id: "lizard_green", happy: "public/assets/characters/lizard_green/happy.png", sad: "public/assets/characters/lizard_green/sad.png", sleep: "public/assets/characters/lizard_green/sleep.png" },
+      { id: "cat_purple", happy: "public/assets/characters/cat_purple/happy.png", sad: "public/assets/characters/cat_purple/sad.png", sleep: "public/assets/characters/cat_purple/sleep.png" }
     ];
 
     const SILHOUETTES = [
@@ -761,35 +835,94 @@
       petName: "",
       characterId: "",
       mood: "happy",
-      affection: 55,
-      hunger: 60,
-      cleanliness: 70,
-      energy: 65,
+      affection: 0,
+      hunger: 0,
+      cleanliness: 0,
+      energy: 0,
       message: "その相棒と自由にお世話を続けましょう。",
+      macaronColor: "",
+      macaronLabel: "",
+      macaronImage: "",
+      macaronCharacterId: "",
+      macaronStartedAt: 0,
       totalHearts: 0,
-      heartBank: 0,
+      giftsToday: 0,
+      careDate: "",
+      careStarted: false,
+      dayCompleted: false,
       collectedSilhouettes: []
     };
 
     let wasAllFull = false;
+    let macaronTimerId = null;
     const app = document.getElementById("app");
 
     function save() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
 
+    function getTodayKey() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function resetCareStatsToZero(changeMessage = true) {
+      state.affection = 0;
+      state.hunger = 0;
+      state.cleanliness = 0;
+      state.energy = 0;
+      state.mood = "happy";
+      state.careStarted = false;
+      state.dayCompleted = false;
+
+      if (changeMessage) {
+        state.message = `${state.petName || "○○"}の新しいお世話を始めましょう。`;
+      }
+    }
+
+    function normalizeDailyState() {
+      const today = getTodayKey();
+
+      if (!state.careDate) {
+        state.careDate = today;
+      }
+
+      if (state.careDate !== today) {
+        state.careDate = today;
+        state.giftsToday = 0;
+        resetCareStatsToZero(true);
+        state.message = `${state.petName || "○○"}の新しい1日が始まりました。0%から少しずつお世話していきましょう。`;
+      }
+    }
+
     function load() {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
+      if (!raw) {
+        state.careDate = getTodayKey();
+        return;
+      }
+
       try {
         const saved = JSON.parse(raw);
         state = { ...state, ...saved };
         if (!Array.isArray(state.collectedSilhouettes)) state.collectedSilhouettes = [];
         if (typeof state.totalHearts !== "number") state.totalHearts = 0;
-        if (typeof state.heartBank !== "number") state.heartBank = 0;
-        if (state.mood === "sleep") state.mood = "happy";
+        if (typeof state.giftsToday !== "number") state.giftsToday = 0;
+        if (typeof state.careStarted !== "boolean") state.careStarted = false;
+        if (typeof state.dayCompleted !== "boolean") state.dayCompleted = false;
+        if (typeof state.careDate !== "string") state.careDate = "";
+        if (typeof state.macaronStartedAt !== "number") state.macaronStartedAt = 0;
+        if (typeof state.macaronColor !== "string") state.macaronColor = "";
+        if (typeof state.macaronLabel !== "string") state.macaronLabel = "";
+        if (typeof state.macaronImage !== "string") state.macaronImage = "";
+        if (typeof state.macaronCharacterId !== "string") state.macaronCharacterId = "";
+        normalizeDailyState();
       } catch (e) {
         localStorage.removeItem(STORAGE_KEY);
+        state.careDate = getTodayKey();
       }
     }
 
@@ -800,7 +933,7 @@
     }
 
     function isLowStatusScene() {
-      return state.screen === "care" && getAverageCareStatus() <= LOW_STATUS_THRESHOLD;
+      return state.screen === "care" && state.careStarted && !state.dayCompleted && getAverageCareStatus() <= LOW_STATUS_THRESHOLD;
     }
 
     function isAllFull() {
@@ -817,33 +950,17 @@
 
     function getPetImage() {
       const character = getCharacter();
+      if (state.mood === "sleep" || state.dayCompleted) return character.sleep || character.sad || character.happy;
       if (state.mood === "sad" || isLowStatusScene()) return character.sad;
       return character.happy;
     }
 
     function getMotionClass() {
-      if (!state.characterId) return "";
+      if (!state.characterId || state.mood === "sleep" || state.dayCompleted) return "";
       return `motion-${state.characterId}`;
     }
 
     function getCollectedCount() { return state.collectedSilhouettes.length; }
-
-    function addCareHeart() {
-      state.totalHearts += 1;
-
-      if (getCollectedCount() >= TOTAL_SILHOUETTES) {
-        return null;
-      }
-
-      state.heartBank += 1;
-
-      if (state.heartBank >= HEARTS_PER_GIFT) {
-        state.heartBank -= HEARTS_PER_GIFT;
-        return unlockSilhouette();
-      }
-
-      return null;
-    }
 
     function unlockSilhouette() {
       const collected = new Set(state.collectedSilhouettes);
@@ -855,49 +972,82 @@
     }
 
     function finishAction(options = {}) {
-      const allFullBefore = wasAllFull;
-      let newGift = null;
+      if (!state.dayCompleted && options.markCareStarted) {
+        state.careStarted = true;
+      }
 
-      if (options.awardHeart) {
-        newGift = addCareHeart();
+      let newGift = null;
+      const becameFull = !state.dayCompleted && isAllFull();
+
+      if (becameFull) {
+        state.totalHearts += 1;
+        state.mood = "sleep";
+        state.dayCompleted = true;
+        state.careStarted = false;
+
+        const canReceiveToday = state.giftsToday < MAX_DAILY_SILHOUETTE_GIFTS;
+        const hasRemainingSilhouettes = getCollectedCount() < TOTAL_SILHOUETTES;
+
+        if (canReceiveToday && hasRemainingSilhouettes) {
+          newGift = unlockSilhouette();
+          if (newGift) state.giftsToday += 1;
+        }
+
+        if (state.giftsToday >= MAX_DAILY_SILHOUETTE_GIFTS) {
+          state.message = `${state.petName}は全部満足して、お昼寝しています。今日のシルエットプレゼントは4こまでです。`;
+        } else {
+          state.message = `${state.petName}は全部満足して、お昼寝しています。`;
+        }
       }
 
       save();
       render();
 
-      const allFullNow = isAllFull();
-
-      if (allFullNow && !allFullBefore && !isLowStatusScene()) {
+      if (becameFull) {
         setTimeout(showFullReward, 80);
       }
-
-      wasAllFull = allFullNow;
 
       if (options.hearts) {
         setTimeout(makeHearts, 40);
       }
 
       if (newGift) {
-        setTimeout(() => showSilhouetteGift(newGift), 250);
-      } else if (getCollectedCount() === TOTAL_SILHOUETTES && options.awardHeart && state.totalHearts === TOTAL_SILHOUETTES * HEARTS_PER_GIFT) {
-        setTimeout(showCompleteGift, 250);
+        setTimeout(() => showSilhouetteGift(newGift), 280);
+      } else if (becameFull && getCollectedCount() >= TOTAL_SILHOUETTES) {
+        setTimeout(showCompleteGift, 280);
+      } else if (becameFull && state.giftsToday >= MAX_DAILY_SILHOUETTE_GIFTS) {
+        setTimeout(showDailyLimitNotice, 280);
       }
+
+      wasAllFull = isAllFull();
+    }
+
+    function startNextCareRound() {
+      if (state.giftsToday >= MAX_DAILY_SILHOUETTE_GIFTS) {
+        alert("今日のシルエットプレゼントは4こまでです。明日またお世話できます。");
+        return;
+      }
+
+      resetCareStatsToZero(true);
+      state.message = `${state.petName}の次の日のお世話を始めましょう。0%から少しずつ満たしていきます。`;
+      save();
+      render();
     }
 
     function collectionStatusHtml() {
-      const next = getCollectedCount() >= TOTAL_SILHOUETTES ? 0 : HEARTS_PER_GIFT - state.heartBank;
-      const progress = getCollectedCount() >= TOTAL_SILHOUETTES ? 100 : (state.heartBank / HEARTS_PER_GIFT) * 100;
-      const nextText = getCollectedCount() >= TOTAL_SILHOUETTES ? "図鑑コンプリート" : `あと${next}こでプレゼント`;
+      const progress = Math.min(100, (state.giftsToday / MAX_DAILY_SILHOUETTE_GIFTS) * 100);
+      const todayText = `今日 ${state.giftsToday}/${MAX_DAILY_SILHOUETTE_GIFTS}こ`;
       return `
         <div class="collection-status">
           <div class="collection-status-main">
-            <span class="heart-counter">💗 ${state.totalHearts}</span>
-            <span>🎁 ${nextText}</span>
+            <span class="heart-counter">💗 満足 ${state.totalHearts}</span>
+            <span>🎁 ${todayText}</span>
             <span>図鑑 ${getCollectedCount()}/${TOTAL_SILHOUETTES}</span>
           </div>
           <div class="mini-progress">
             <div class="mini-progress-fill" style="width:${progress}%"></div>
           </div>
+          <p class="small">4つのゲージがすべて100%になると、シルエットプレゼントが1つ届きます。</p>
           <button class="collection-open-btn secondary" onclick="openCollection()">シルエット図鑑を見る</button>
         </div>
       `;
@@ -911,11 +1061,28 @@
       modal.innerHTML = `
         <div class="modal-card">
           <div class="gift-title">シルエットプレゼントが届きました</div>
-          <p class="small">ハートが3こたまったので、新しい相棒シルエットを見つけました。</p>
+          <p class="small">4つのゲージがすべて100%になったので、新しい相棒シルエットを見つけました。</p>
           <img class="silhouette-big" src="${item.image}" alt="${escapeHtml(item.name)}">
           <div class="silhouette-name">No.${item.id} ${escapeHtml(item.name)}</div>
           <div class="silhouette-type">${escapeHtml(item.type)}</div>
           <p>${escapeHtml(item.message)}</p>
+          <button onclick="openCollection()">図鑑を見る</button>
+          <button class="secondary" onclick="closeModal()">閉じる</button>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function showDailyLimitNotice() {
+      closeModal();
+      const modal = document.createElement("div");
+      modal.className = "modal-backdrop";
+      modal.id = "activeModal";
+      modal.innerHTML = `
+        <div class="modal-card">
+          <div class="gift-title">今日はここまで</div>
+          <p>今日のシルエットプレゼントは4こまでです。</p>
+          <p class="small">${escapeHtml(state.petName)}は満足してお昼寝しています。明日になると、また0%からお世話を始められます。</p>
           <button onclick="openCollection()">図鑑を見る</button>
           <button class="secondary" onclick="closeModal()">閉じる</button>
         </div>
@@ -960,7 +1127,7 @@
       modal.innerHTML = `
         <div class="modal-card">
           <h2>シルエット図鑑</h2>
-          <p class="small">ハート3こで、まだ持っていないシルエットが1つ届きます。</p>
+          <p class="small">4つのゲージがすべて100%になると、まだ持っていないシルエットが1つ届きます。</p>
           <p><strong>${getCollectedCount()} / ${TOTAL_SILHOUETTES}</strong> 種類 集まりました</p>
           <div class="collection-grid">${grid}</div>
           <button class="secondary" onclick="closeModal()">閉じる</button>
@@ -1051,72 +1218,166 @@
       `;
     }
 
-    function openGift() { state.screen = "macaron"; save(); render(); }
+    function openGift() {
+      const macaron = chooseMacaron();
 
-    function getMacaronImage() {
-      const macarons = [
-        "public/assets/macarons/blue_crystal_macaron.png",
-        "public/assets/macarons/blue_macaron.png",
-        "public/assets/macarons/green_crystal_macaron.png",
-        "public/assets/macarons/green_macaron.png",
-        "public/assets/macarons/pink_crystal_macaron.png",
-        "public/assets/macarons/pink_macaron.png",
-        "public/assets/macarons/purple_crystal_macaron.png",
-        "public/assets/macarons/purple_macaron.png",
-        "public/assets/macarons/white_crystal_macaron.png",
-        "public/assets/macarons/white_macaron.png",
-        "public/assets/macarons/yellow_crystal_macaron.png",
-        "public/assets/macarons/yellow_macaron.png"
-      ];
+      state.screen = "macaron";
+      state.macaronColor = macaron.color;
+      state.macaronLabel = macaron.label;
+      state.macaronImage = macaron.image;
+      state.macaronCharacterId = macaron.characterId;
+      state.macaronStartedAt = Date.now();
 
-      return macarons[Math.floor(Math.random() * macarons.length)];
+      save();
+      render();
+    }
+
+    function chooseMacaron() {
+      return MACARON_OPTIONS[Math.floor(Math.random() * MACARON_OPTIONS.length)];
+    }
+
+    function getCurrentMacaron() {
+      if (!state.macaronImage || !state.macaronCharacterId) {
+        const macaron = chooseMacaron();
+        state.macaronColor = macaron.color;
+        state.macaronLabel = macaron.label;
+        state.macaronImage = macaron.image;
+        state.macaronCharacterId = macaron.characterId;
+        state.macaronStartedAt = Date.now();
+        save();
+      }
+
+      return {
+        color: state.macaronColor,
+        label: state.macaronLabel || "マカロン",
+        image: state.macaronImage,
+        characterId: state.macaronCharacterId
+      };
+    }
+
+    function getMacaronRemainingMs() {
+      const startedAt = Number(state.macaronStartedAt || 0);
+      if (!startedAt) return MACARON_BIRTH_WAIT_MS;
+      return Math.max(0, MACARON_BIRTH_WAIT_MS - (Date.now() - startedAt));
+    }
+
+    function getMacaronProgressPercent() {
+      const remaining = getMacaronRemainingMs();
+      return Math.min(100, Math.max(0, ((MACARON_BIRTH_WAIT_MS - remaining) / MACARON_BIRTH_WAIT_MS) * 100));
     }
 
     function showMacaron() {
-      const macaronImg = getMacaronImage();
+      const macaron = getCurrentMacaron();
+      const remainingSeconds = Math.ceil(getMacaronRemainingMs() / 1000);
+      const progress = getMacaronProgressPercent();
 
       app.innerHTML = `
         <div class="card">
           <h2>マカロンが出てきました</h2>
-          <p>マカロンをクリックしてみてね。</p>
+          <p>${escapeHtml(macaron.label)}から、小さな相棒が生まれようとしています。</p>
 
           <img
             class="macaron-img"
-            src="${macaronImg}"
-            alt="マカロン"
-            onclick="birthPet()"
+            src="${macaron.image}"
+            alt="${escapeHtml(macaron.label)}"
             onerror="showCssMacaronFallback()"
           >
+
+          <div class="macaron-wait-box">
+            <div>生まれるまで</div>
+            <div class="macaron-countdown" id="macaronCountdown">${remainingSeconds}</div>
+            <div>秒くらいです</div>
+            <div class="macaron-progress">
+              <div class="macaron-progress-fill" id="macaronProgressFill" style="width:${progress}%"></div>
+            </div>
+            <p class="small">このマカロンの色で、生まれてくる相棒が決まります。</p>
+          </div>
         </div>
       `;
+
+      startMacaronTimer();
+    }
+
+    function startMacaronTimer() {
+      if (macaronTimerId) {
+        clearInterval(macaronTimerId);
+        macaronTimerId = null;
+      }
+
+      function updateCountdown() {
+        if (state.screen !== "macaron") {
+          clearInterval(macaronTimerId);
+          macaronTimerId = null;
+          return;
+        }
+
+        const remaining = getMacaronRemainingMs();
+        const remainingSeconds = Math.ceil(remaining / 1000);
+        const countdown = document.getElementById("macaronCountdown");
+        const progressFill = document.getElementById("macaronProgressFill");
+
+        if (countdown) countdown.textContent = remainingSeconds;
+        if (progressFill) progressFill.style.width = `${getMacaronProgressPercent()}%`;
+
+        if (remaining <= 0) {
+          clearInterval(macaronTimerId);
+          macaronTimerId = null;
+          birthPet();
+        }
+      }
+
+      updateCountdown();
+      macaronTimerId = setInterval(updateCountdown, 500);
     }
 
     function showCssMacaronFallback() {
       const card = document.querySelector(".card");
       if (!card) return;
+      const remainingSeconds = Math.ceil(getMacaronRemainingMs() / 1000);
+      const progress = getMacaronProgressPercent();
 
       card.innerHTML = `
         <h2>マカロンが出てきました</h2>
-        <p>マカロンをクリックしてみてね。</p>
+        <p>マカロンから、小さな相棒が生まれようとしています。</p>
 
-        <div class="macaron" onclick="birthPet()">
+        <div class="macaron">
           <div class="macaron-top"></div>
           <div class="macaron-cream"></div>
           <div class="macaron-bottom"></div>
+        </div>
+
+        <div class="macaron-wait-box">
+          <div>生まれるまで</div>
+          <div class="macaron-countdown" id="macaronCountdown">${remainingSeconds}</div>
+          <div>秒くらいです</div>
+          <div class="macaron-progress">
+            <div class="macaron-progress-fill" id="macaronProgressFill" style="width:${progress}%"></div>
+          </div>
         </div>
       `;
     }
 
     function birthPet() {
-      const randomCharacter = CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
-      state.characterId = randomCharacter.id;
+      if (macaronTimerId) {
+        clearInterval(macaronTimerId);
+        macaronTimerId = null;
+      }
+
+      const macaron = getCurrentMacaron();
+
+      state.characterId = macaron.characterId || chooseMacaron().characterId;
       state.screen = "name";
       state.mood = "happy";
-      state.affection = 55;
-      state.hunger = 60;
-      state.cleanliness = 70;
-      state.energy = 65;
+      state.affection = 0;
+      state.hunger = 0;
+      state.cleanliness = 0;
+      state.energy = 0;
+      state.careDate = getTodayKey();
+      state.giftsToday = 0;
+      state.careStarted = false;
+      state.dayCompleted = false;
       state.message = "名前をつけてね。";
+      state.macaronStartedAt = 0;
       save();
       render();
     }
@@ -1143,7 +1404,7 @@
       if (!name) { alert("名前を入力してください。"); return; }
       state.petName = name;
       state.screen = "care";
-      state.message = `${state.petName}と自由にお世話を続けましょう。`;
+      state.message = `${state.petName}と自由にお世話を続けましょう。0%から少しずつ満たしていきます。`;
       save();
       render();
     }
@@ -1152,11 +1413,14 @@
       const img = getPetImage();
       const lowStatus = isLowStatusScene();
       const motionClass = getMotionClass();
+      const isSleeping = state.dayCompleted || state.mood === "sleep";
+      const canStartNext = state.giftsToday < MAX_DAILY_SILHOUETTE_GIFTS;
+
       app.innerHTML = `
         <div class="card">
           <h1>${escapeHtml(state.petName)}</h1>
           <div class="pet-area" id="petArea">
-            <img class="pet-img ${motionClass}" src="${img}" alt="相棒" onclick="petTouch()" onerror="showFallbackPet(this)">
+            <img class="pet-img ${motionClass}" src="${img}" alt="相棒" ${isSleeping ? "" : 'onclick="petTouch()"'} onerror="showFallbackPet(this)">
             ${lowStatus ? lowStatusTearsHtml() : ""}
           </div>
           <div class="message">${escapeHtml(state.message)}</div>
@@ -1167,15 +1431,30 @@
             ${bar("きれい", state.cleanliness)}
             ${bar("げんき", state.energy)}
           </div>
-          <div class="actions">
-            <button onclick="showFoodChoices()">ごはん</button>
-            <button onclick="showWalkChoices()">おでかけ</button>
-            <button onclick="petTouch()">なでる</button>
-            <button onclick="startCleanGame()">きれいにする</button>
-          </div>
-          <div class="choice-box" id="choiceBox"></div>
-          <div class="mini-game" id="cleanGame"></div>
-          <button class="secondary" onclick="smallRest()">様子を見る</button>
+
+          ${isSleeping ? `
+            <div class="sleep-panel">
+              <div class="sleep-panel-title">お昼寝中です</div>
+              <div>${escapeHtml(state.petName)}は満足して、すやすや眠っています。</div>
+              ${canStartNext ? `
+                <button onclick="startNextCareRound()">次の日のお世話を始める</button>
+                <div class="daily-limit-note">今日のプレゼントはあと${MAX_DAILY_SILHOUETTE_GIFTS - state.giftsToday}こ受け取れます。</div>
+              ` : `
+                <div class="daily-limit-note">今日のシルエットプレゼントは4こまでです。明日になると、また0%から始められます。</div>
+              `}
+            </div>
+          ` : `
+            <div class="actions">
+              <button onclick="showFoodChoices()">ごはん</button>
+              <button onclick="showWalkChoices()">おでかけ</button>
+              <button onclick="petTouch()">なでる</button>
+              <button onclick="startCleanGame()">きれいにする</button>
+            </div>
+            <div class="choice-box" id="choiceBox"></div>
+            <div class="mini-game" id="cleanGame"></div>
+            <button class="secondary" onclick="smallRest()">様子を見る</button>
+          `}
+
           <button class="danger" onclick="resetGame()">リセット</button>
         </div>
         ${lowStatus ? lowStatusSceneHtml() : ""}
@@ -1213,7 +1492,7 @@
         state.mood = "happy";
         state.message = `${state.petName}はふわふわミルクでほっとしています。`;
       }
-      finishAction({ awardHeart: true });
+      finishAction({ markCareStarted: true });
     }
 
     function showWalkChoices() {
@@ -1237,7 +1516,7 @@
         state.mood = "happy";
         state.message = `${state.petName}は星の丘で空を見上げています。`;
       }
-      finishAction({ awardHeart: true });
+      finishAction({ markCareStarted: true });
     }
 
     function petTouch() {
@@ -1245,7 +1524,7 @@
       state.energy = clamp(state.energy + 2);
       state.mood = "happy";
       state.message = `${state.petName}はうれしそうです。`;
-      finishAction({ hearts: true, awardHeart: true });
+      finishAction({ hearts: true, markCareStarted: true });
     }
 
     function makeHearts() {
@@ -1295,7 +1574,7 @@
         state.affection = clamp(state.affection + 6);
         state.mood = "happy";
         state.message = `${state.petName}のまわりがきれいになりました。`;
-        setTimeout(() => finishAction({ awardHeart: true }), 450);
+        setTimeout(() => finishAction({ markCareStarted: true }), 450);
       }
     }
 
@@ -1314,7 +1593,7 @@
         state.mood = "happy";
         state.message = `${state.petName}はそばでのんびりしています。`;
       }
-      finishAction({ awardHeart: true });
+      finishAction({ markCareStarted: true });
     }
 
     function resetGame() {
@@ -1326,13 +1605,21 @@
         petName: "",
         characterId: "",
         mood: "happy",
-        affection: 55,
-        hunger: 60,
-        cleanliness: 70,
-        energy: 65,
+        affection: 0,
+        hunger: 0,
+        cleanliness: 0,
+        energy: 0,
         message: "その相棒と自由にお世話を続けましょう。",
+        macaronColor: "",
+        macaronLabel: "",
+        macaronImage: "",
+        macaronCharacterId: "",
+        macaronStartedAt: 0,
         totalHearts: 0,
-        heartBank: 0,
+        giftsToday: 0,
+        careDate: getTodayKey(),
+        careStarted: false,
+        dayCompleted: false,
         collectedSilhouettes: []
       };
       wasAllFull = false;
