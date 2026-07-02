@@ -109,6 +109,17 @@
       animation: float 2.3s ease-in-out infinite;
     }
 
+    .gift-img {
+      width: 165px;
+      max-width: 78%;
+      margin: 22px auto;
+      display: block;
+      cursor: pointer;
+      animation: pop 0.8s ease, float 2.4s ease-in-out infinite;
+      user-select: none;
+      filter: drop-shadow(0 14px 24px rgba(120, 140, 180, 0.22));
+    }
+
     .gift-box {
       width: 120px;
       height: 90px;
@@ -1007,11 +1018,36 @@
         <div class="card">
           <h2>プレゼントが届きました</h2>
           <p>プレゼントをクリックしてみてね。</p>
-          <div class="gift" onclick="openGift()">
-            <div class="gift-lid"></div><div class="gift-box"></div><div class="gift-ribbon-v"></div><div class="gift-ribbon-h"></div>
-          </div>
+
+          <img
+            class="gift-img"
+            src="public/assets/macarons/macaron_gift_box.png"
+            alt="プレゼント"
+            onclick="openGift()"
+            onerror="showCssGiftFallback()"
+          >
+
           <p class="small">この自由モードでは、研究用の条件変化はありません。</p>
         </div>
+      `;
+    }
+
+    function showCssGiftFallback() {
+      const card = document.querySelector(".card");
+      if (!card) return;
+
+      card.innerHTML = `
+        <h2>プレゼントが届きました</h2>
+        <p>プレゼントをクリックしてみてね。</p>
+
+        <div class="gift" onclick="openGift()">
+          <div class="gift-lid"></div>
+          <div class="gift-box"></div>
+          <div class="gift-ribbon-v"></div>
+          <div class="gift-ribbon-h"></div>
+        </div>
+
+        <p class="small">この自由モードでは、研究用の条件変化はありません。</p>
       `;
     }
 
